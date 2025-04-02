@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <title>Fisica</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../assets/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* Estilos para el bote y la simulación */
+        #boat {
+            position: relative;
+            width: 100px;
+            top: 15%;
+            transition: left 0.1s linear;
+            animation: float 3s ease-in-out infinite;
+        }
+        #simulation {
+            position: relative;
+            height: 150px;
+            border: 1px solid #000;
+            overflow: hidden;
+            background: linear-gradient(to top, #1E90FF 50%, #87CEEB 100%);
+        }
+        .waves {
+            position: absolute;
+            bottom: 30%;
+            width: 100%;
+            height: 30px;
+            background: url('https://i.imgur.com/CaxE3Kw.png') repeat-x;
+            background-size: auto 30px;
+            animation: wave-animation 2s infinite linear;
+        }
+        @keyframes wave-animation {
+            from { background-position: 0 0; }
+            to { background-position: 100px 0; }
+        }
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0); }
+        }
+    </style>
+    <link href="arch.css" rel="stylesheet">
+</head>
+<body>
+
+<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">MUEVE el BOTE</a>
+    <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="navbar-nav">
+        <div class="nav-item text-nowrap">
+            <a class="nav-link px-3" href="#">Fisica 2025</a>
+        </div>
+    </div>
+</header>
+
+<div class="container-fluid">
+    <div class="row">
+    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+      <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="mru.html">
+              <span data-feather="file-text"></span>
+              Movimiento Rectilíneo Uniforme (MRU)
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="mruv.html">
+              <span data-feather="file-text"></span>
+              Movimiento Rectilíneo Uniformemente Variado (MRUV)
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="av.html">
+              <span data-feather="file-text"></span>
+              Movimiento con Aceleración Variable
+            </a>
+          </li>
+        </ul>
+
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+          <span>INTEGRANTES</span>
+        </h6>
+        <ul class="nav flex-column mb-2">
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              <span data-feather="users"></span>
+              Mauricio Barragan
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              <span data-feather="users"></span>
+              Santiago Conte
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              <span data-feather="users"></span>
+              Valentina Mendez
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              <span data-feather="users"></span>
+              Nombre estudiante
+            </a>
+          </li>
+		  </ul>
+      </div>
+    </nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <br>
+            <h2>i like move move</h2>
+            <div class="table-responsive">
+                <div id="simulation">
+                    <img id="boat" src="https://i.imgur.com/tTRvnPS.png">
+                    <div class="waves"></div>
+                </div>
+            </div>
+
+            <h2>Cuéntale al rey Julien</h2>
+            <div class="table-responsive">
+                <div id="controls">
+                    <label>Velocidad Inicial:</label>
+                    <input style="width:30%" type="number" id="initialSpeed" value="0">
+                    <label>Constante de Aceleración (k):</label>
+                    <input style="width:30%" type="number" id="accelerationConstant" value="0">
+                    <br><br>
+                    <button style="width:100%" onclick="startSimulation()">Iniciar Movimiento</button>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Gráfica (Aceleración Variable)</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div id="equation"></div>
+                </div>
+            </div>
+
+            <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+        </main>
+    </div>
+</div>
+
+<script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script>
+<script src="arch.js"></script>
+<script>
+    function startSimulation() {
+        let v0 = parseFloat(document.getElementById('initialSpeed').value);
+        let k = parseFloat(document.getElementById('accelerationConstant').value);
+        document.getElementById('equation').innerHTML = `x = ${v0}t + 0.5(${k})t²`;
+
+        let boat = document.getElementById('boat');
+        let position = 0;
+        let t = 0;
+        let duration = 10; // Duración de la simulación en segundos
+        let interval = setInterval(() => {
+            if (t <= duration) {
+                let a = k * t; // Aceleración variable
+                position = v0 * t + 0.5 * a * t * t; // Fórmula de posición con aceleración variable
+                boat.style.left = position + 'px';
+                t += 0.1; // Incrementar el tiempo
+            } else {
+                clearInterval(interval); // Detener la simulación
+                generateGraph(v0, k); // Generar la gráfica al finalizar el movimiento
+            }
+        }, 100); // Actualizar cada 100 ms
+    }
+
+    function generateGraph(v0, k) {
+        let ctx = document.getElementById('myChart').getContext('2d');
+        let data = [];
+        for (let t = 0; t <= 10; t += 0.1) {
+            let a = k * t; // Aceleración variable
+            let position = v0 * t + 0.5 * a * t * t; // Fórmula de posición con aceleración variable
+            data.push({ x: t, y: position });
+        }
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'Posición (x) en el tiempo',
+                    data: data,
+                    borderColor: 'blue',
+                    fill: false,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    xAxes: [{
+                        type: 'linear',
+                        position: 'bottom',
+                        ticks: {
+                            min: 0,
+                            max: 20
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Tiempo (s)'
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            min: 0,
+                            max: 20
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Posición (px)'
+                        }
+                    }]
+                }
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
