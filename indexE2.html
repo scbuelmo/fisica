@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <title>Fisica</title>
+          <!-- Meta tags para redes sociales -->
+          <meta property="og:image" content="https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0K5prXUEjR7oilQcqGuVyEA8Sm1pf4v95nLIB" />
+          <meta property="og:image:alt" content="Imagen del proyecto" />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:image" content="https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0K5prXUEjR7oilQcqGuVyEA8Sm1pf4v95nLIB" />
+
+          <!-- TailwindCSS CDN -->
+          <script src="https://cdn.tailwindcss.com"></script>
+
+          <!-- React & Babel -->
+          <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+          <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+          <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Bootstrap core CSS -->
+    <link href="../assets/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
+    <link href="arch.css" rel="stylesheet">
+</head>
+<body>
+
+<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">Fisica </a>
+    <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="navbar-nav">
+        <div class="nav-item text-nowrap">
+            <a class="nav-link px-3" href="#">INTEGRANTES: Valentina Mendez, Santiago Conte, Ian Miller, Joaquin Machin, Yoibert Mendoza.</a>
+        </div>
+    </div>
+</header>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <br>
+          <div id="root"></div>
+
+          <script type="text/babel">
+const { useState, useEffect, useRef, useMemo, createContext, useContext, StrictMode } = React;
+            const { createRoot } = ReactDOM;
+
+            // /components/MotionSelector.js
+const MotionSelector = ({ onSelectMotion }) => {
+  const [selectedMotion, setSelectedMotion] = useState('MRU');
+
+  const handleMotionChange = (motion) => {
+    setSelectedMotion(motion);
+    onSelectMotion(motion);
+  };
+
+  return (
+    <div className="p-4 bg-white rounded-lg shadow-md">
+      <h2 className="text-xl font-bold mb-4 text-gray-800">Tipo de Movimiento</h2>
+      <div className="flex space-x-4">
+        <button
+          onClick={() => handleMotionChange('MRU')}
+          className={`px-4 py-2 rounded-lg transition-all ${selectedMotion === 'MRU' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+        >
+          MRU
+        </button>
+        <button
+          onClick={() => handleMotionChange('MRUV')}
+          className={`px-4 py-2 rounded-lg transition-all ${selectedMotion === 'MRUV' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+        >
+          MRUV
+        </button>
+        <button
+          onClick={() => handleMotionChange('Variable')}
+          className={`px-4 py-2 rounded-lg transition-all ${selectedMotion === 'Variable' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+        >
+          Aceleración Variable
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// /components/InputForm.js
+const InputForm = ({ motionType, onCalculate }) => {
+  const [formData, setFormData] = useState({
+    initialPosition: 0,
+    initialVelocity: 0,
+    acceleration: 0,
+    time: 0,
+    accelerationFunction: '0.5*t'
+  });
+
+  useEffect(() => {
+    // Reset form when motion type changes
+    setFormData({
+      initialPosition: 0,
+      initialVelocity: 0,
+      acceleration: 0,
+      time: 0,
+      accelerationFunction: '0.5*t'
+    });
+  }, [motionType]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: parseFloat(value) || 0
+    }));
+  };
+
+  const handleFunctionChange = (e) => {
+    setFormData(prev => ({
+      ...prev,
+      accelerationFunction: e.target.value
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onCalculate(formData);
+  };
+
+  return (
+    <div className="p-4 bg-white rounded-lg shadow-md">
+      <h2 className="text-xl font-bold mb-4 text-gray-800">Parámetros del Movimiento</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Posición Inicial (m)</label>
+          <input
+            type="number"
+            name="initialPosition"
+            value={formData.initialPosition}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Velocidad Inicial (m/s)</label>
+          <input
+            type="number"
+            name="initialVelocity"
+            value={formData.initialVelocity}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        {motionType !== 'MRU' && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {motionType === 'MRUV' ? 'Aceleración (m/s²)' : 'Función de Aceleración'}
+            </label>
+            {motionType === 'MRUV' ? (
+              <input
+                type="number"
+                name="acceleration"
+                value={formData.acceleration}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            ) : (
+              <input
+                type="text"
+                name="accelerationFunction"
+                value={formData.accelerationFunction}
+                onChange={handleFunctionChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Ej: 0.5*t"
+              />
+            )}
+          </div>
+        )}
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Tiempo (s)</label>
+          <input
+            type="number"
+            name="time"
+            value={formData.time}
+            onChange={handleChange}
+            min="0"
+            step="0.1"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        >
+          Calcular
+        </button>
+      </form>
+    </div>
+  );
+};
+
+// /components/MotionVisualization.js
+const MotionVisualization = ({ motionData }) => {
+  const canvasRef = useRef(null);
+  const animationRef = useRef(null);
+  const startTimeRef = useRef(null);
+  const currentPositionRef = useRef(0);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
+
+    // Clear previous animation
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
+
+    if (!motionData) return;
+
+    const draw = (timestamp) => {
+      if (!startTimeRef.current) {
+        startTimeRef.current = timestamp;
+      }
+
+      const elapsedTime = (timestamp - startTimeRef.current) / 1000; // Convert to seconds
+      const progress = Math.min(elapsedTime / motionData.time, 1);
+
+      let currentPosition;
+      if (motionData.motionType === 'MRU') {
+        currentPosition = motionData.initialPosition + motionData.initialVelocity * (motionData.time * progress);
+      } else if (motionData.motionType === 'MRUV') {
+        currentPosition = motionData.initialPosition + 
+                         motionData.initialVelocity * (motionData.time * progress) + 
+                         0.5 * motionData.acceleration * Math.pow(motionData.time * progress, 2);
+      } else {
+        // For variable acceleration, we'll use a simplified approach
+        const t = motionData.time * progress;
+        currentPosition = motionData.initialPosition + 
+                         motionData.initialVelocity * t + 
+                         0.5 * 0.5 * Math.pow(t, 2); // Simplified for demo
+      }
+
+      currentPositionRef.current = currentPosition;
+
+      // Clear canvas
+      ctx.clearRect(0, 0, width, height);
+
+      // Draw track
+      ctx.beginPath();
+      ctx.moveTo(50, height / 2);
+      ctx.lineTo(width - 50, height / 2);
+      ctx.strokeStyle = '#ccc';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Draw object
+      const xPos = 50 + ((width - 100) * progress);
+      ctx.beginPath();
+      ctx.arc(xPos, height / 2, 15, 0, Math.PI * 2);
+      ctx.fillStyle = '#3b82f6';
+      ctx.fill();
+
+      // Draw position indicator
+      ctx.font = '12px Arial';
+      ctx.fillStyle = '#333';
+      ctx.fillText(`${currentPosition.toFixed(1)} m`, xPos - 20, height / 2 - 20);
+
+      if (progress < 1) {
+        animationRef.current = requestAnimationFrame(draw);
+      }
+    };
+
+    startTimeRef.current = null;
+    animationRef.current = requestAnimationFrame(draw);
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [motionData]);
+
+  return (
+    <div className="p-4 bg-white rounded-lg shadow-md">
+      <h2 className="text-xl font-bold mb-4 text-gray-800">Visualización del Movimiento</h2>
+      <div className="flex justify-center">
+        <canvas 
+          ref={canvasRef} 
+          width={600} 
+          height={200}
+          className="border border-gray-200 rounded-lg"
+        ></canvas>
+      </div>
+    </div>
+  );
+};
+
+// /components/GraphSection.js
+const GraphSection = ({ motionData }) => {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    if (!motionData) return;
+
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
+    const padding = 40;
+
+    // Clear canvas
+    ctx.clearRect(0, 0, width, height);
+
+    // Draw axes
+    ctx.beginPath();
+    ctx.moveTo(padding, padding);
+    ctx.lineTo(padding, height - padding);
+    ctx.lineTo(width - padding, height - padding);
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Draw axis labels
+    ctx.font = '12px Arial';
+    ctx.fillStyle = '#333';
+    ctx.textAlign = 'center';
+    ctx.fillText('Tiempo (s)', width / 2, height - 10);
+    ctx.save();
+    ctx.translate(20, height / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.textAlign = 'center';
+    ctx.fillText('Posición (m)', 0, 0);
+    ctx.restore();
+
+    // Draw ticks and grid
+    const xTicks = 5;
+    const yTicks = 5;
+    const maxX = motionData.time;
+    const maxY = calculateFinalPosition(motionData);
+
+    // X-axis ticks and grid
+    for (let i = 0; i <= xTicks; i++) {
+      const x = padding + (i / xTicks) * (width - 2 * padding);
+      ctx.beginPath();
+      ctx.moveTo(x, height - padding);
+      ctx.lineTo(x, height - padding - 5);
+      ctx.stroke();
+      ctx.fillText((i * maxX / xTicks).toFixed(1), x, height - padding + 15);
+
+      // Grid
+      ctx.beginPath();
+      ctx.moveTo(x, height - padding);
+      ctx.lineTo(x, padding);
+      ctx.strokeStyle = '#eee';
+      ctx.stroke();
+    }
+
+    // Y-axis ticks and grid
+    for (let i = 0; i <= yTicks; i++) {
+      const y = height - padding - (i / yTicks) * (height - 2 * padding);
+      ctx.beginPath();
+      ctx.moveTo(padding, y);
+      ctx.lineTo(padding + 5, y);
+      ctx.strokeStyle = '#333';
+      ctx.stroke();
+      ctx.fillText((i * maxY / yTicks).toFixed(1), padding - 10, y + 4);
+
+      // Grid
+      ctx.beginPath();
+      ctx.moveTo(padding, y);
+      ctx.lineTo(width - padding, y);
+      ctx.strokeStyle = '#eee';
+      ctx.stroke();
+    }
+
+    // Draw graph
+    ctx.beginPath();
+    ctx.strokeStyle = '#3b82f6';
+    ctx.lineWidth = 2;
+    
+    const points = [];
+    for (let t = 0; t <= maxX; t += maxX / 100) {
+      const x = padding + (t / maxX) * (width - 2 * padding);
+      const pos = calculatePositionAtTime(motionData, t);
+      const y = height - padding - (pos / maxY) * (height - 2 * padding);
+      points.push({x, y});
+    }
+
+    points.forEach((point, i) => {
+      if (i === 0) {
+        ctx.moveTo(point.x, point.y);
+      } else {
+        ctx.lineTo(point.x, point.y);
+      }
+    });
+
+    ctx.stroke();
+  }, [motionData]);
+
+  const calculatePositionAtTime = (data, t) => {
+    if (data.motionType === 'MRU') {
+      return data.initialPosition + data.initialVelocity * t;
+    } else if (data.motionType === 'MRUV') {
+      return data.initialPosition + data.initialVelocity * t + 0.5 * data.acceleration * Math.pow(t, 2);
+    } else {
+      // Simplified for variable acceleration
+      return data.initialPosition + data.initialVelocity * t + 0.5 * 0.5 * Math.pow(t, 2);
+    }
+  };
+
+  const calculateFinalPosition = (data) => {
+    return calculatePositionAtTime(data, data.time);
+  };
+
+  return (
+    <div className="p-4 bg-white rounded-lg shadow-md">
+      <h2 className="text-xl font-bold mb-4 text-gray-800">Gráfica de Posición vs Tiempo</h2>
+      <div className="flex justify-center">
+        <canvas 
+          ref={canvasRef} 
+          width={600} 
+          height={400}
+          className="border border-gray-200 rounded-lg"
+        ></canvas>
+      </div>
+    </div>
+  );
+};
+
+// /components/MathSection.js
+const MathSection = ({ motionData }) => {
+  if (!motionData) return null;
+
+  const renderEquation = () => {
+    if (motionData.motionType === 'MRU') {
+      return (
+        <div className="space-y-2">
+          <p className="text-gray-700">Ecuación del MRU:</p>
+          <p className="text-lg font-mono">x(t) = x₀ + v·t</p>
+          <p className="text-gray-700">Donde:</p>
+          <ul className="list-disc pl-5 text-gray-700">
+            <li>x₀ = Posición inicial = {motionData.initialPosition} m</li>
+            <li>v = Velocidad = {motionData.initialVelocity} m/s</li>
+            <li>t = Tiempo = {motionData.time} s</li>
+          </ul>
+          <p className="text-gray-700 mt-2">Cálculo:</p>
+          <p className="font-mono">
+            x({motionData.time}) = {motionData.initialPosition} + {motionData.initialVelocity}·{motionData.time}<br />
+            = {motionData.initialPosition} + {motionData.initialVelocity * motionData.time}<br />
+            = {motionData.initialPosition + motionData.initialVelocity * motionData.time} m
+          </p>
+        </div>
+      );
+    } else if (motionData.motionType === 'MRUV') {
+      return (
+        <div className="space-y-2">
+          <p className="text-gray-700">Ecuación del MRUV:</p>
+          <p className="text-lg font-mono">x(t) = x₀ + v₀·t + ½·a·t²</p>
+          <p className="text-gray-700">Donde:</p>
+          <ul className="list-disc pl-5 text-gray-700">
+            <li>x₀ = Posición inicial = {motionData.initialPosition} m</li>
+            <li>v₀ = Velocidad inicial = {motionData.initialVelocity} m/s</li>
+            <li>a = Aceleración = {motionData.acceleration} m/s²</li>
+            <li>t = Tiempo = {motionData.time} s</li>
+          </ul>
+          <p className="text-gray-700 mt-2">Cálculo:</p>
+          <p className="font-mono">
+            x({motionData.time}) = {motionData.initialPosition} + {motionData.initialVelocity}·{motionData.time} + ½·{motionData.acceleration}·{motionData.time}²<br />
+            = {motionData.initialPosition} + {motionData.initialVelocity * motionData.time} + {0.5 * motionData.acceleration * Math.pow(motionData.time, 2)}<br />
+            = {motionData.initialPosition + motionData.initialVelocity * motionData.time + 0.5 * motionData.acceleration * Math.pow(motionData.time, 2)} m
+          </p>
+        </div>
+      );
+    } else {
+      return (
+        <div className="space-y-2">
+          <p className="text-gray-700">Ecuación con Aceleración Variable:</p>
+          <p className="text-lg font-mono">x(t) = x₀ + v₀·t + ½·∫a(t)dt</p>
+          <p className="text-gray-700">Donde:</p>
+          <ul className="list-disc pl-5 text-gray-700">
+            <li>x₀ = Posición inicial = {motionData.initialPosition} m</li>
+            <li>v₀ = Velocidad inicial = {motionData.initialVelocity} m/s</li>
+            <li>a(t) = Función de aceleración = {motionData.accelerationFunction}</li>
+            <li>t = Tiempo = {motionData.time} s</li>
+          </ul>
+          <p className="text-gray-700 mt-2">Cálculo (simplificado):</p>
+          <p className="font-mono">
+            Para a(t) = 0.5·t<br />
+            x({motionData.time}) = {motionData.initialPosition} + {motionData.initialVelocity}·{motionData.time} + ½·(0.25·{motionData.time}²)<br />
+            = {motionData.initialPosition} + {motionData.initialVelocity * motionData.time} + {0.5 * 0.25 * Math.pow(motionData.time, 2)}<br />
+            = {motionData.initialPosition + motionData.initialVelocity * motionData.time + 0.5 * 0.25 * Math.pow(motionData.time, 2)} m
+          </p>
+        </div>
+      );
+    }
+  };
+
+  return (
+    <div className="p-4 bg-white rounded-lg shadow-md">
+      <h2 className="text-xl font-bold mb-4 text-gray-800">Desarrollo Matemático</h2>
+      {renderEquation()}
+    </div>
+  );
+};
+
+// /App.js
+const App = () => {
+  const [motionType, setMotionType] = useState('MRU');
+  const [motionData, setMotionData] = useState(null);
+
+  const handleSelectMotion = (type) => {
+    setMotionType(type);
+    setMotionData(null);
+  };
+
+  const handleCalculate = (formData) => {
+    setMotionData({
+      ...formData,
+      motionType
+    });
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100 p-6">
+      <div className="max-w-6xl mx-auto space-y-6">
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-1 space-y-6">
+            <MotionSelector onSelectMotion={handleSelectMotion} />
+            <InputForm motionType={motionType} onCalculate={handleCalculate} />
+          </div>
+          
+          <div className="lg:col-span-2 space-y-6">
+            {motionData && (
+              <>
+                <MotionVisualization motionData={motionData} />
+                <GraphSection motionData={motionData} />
+                <MathSection motionData={motionData} />
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+// DONE
+
+      const root = createRoot(document.getElementById("root"));
+            root.render(
+              <StrictMode>
+                <App />
+              </StrictMode>
+            );
+</script>
+        </main>
+    </div>
+</div>
+
+<script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script>
+<script src="arch.js"></script>
+<script>
+    function startSimulation() {
+        let v0 = parseFloat(document.getElementById('initialSpeed').value);
+        let k = parseFloat(document.getElementById('accelerationConstant').value);
+        document.getElementById('equation').innerHTML = `x = ${v0}t + 0.5(${k})t²`;
+
+        let boat = document.getElementById('boat');
+        let position = 0;
+        let t = 0;
+        let duration = 10; // Duración de la simulación en segundos
+        let interval = setInterval(() => {
+            if (t <= duration) {
+                let a = k * t; // Aceleración variable
+                position = v0 * t + 0.5 * a * t * t; // Fórmula de posición con aceleración variable
+                boat.style.left = position + 'px';
+                t += 0.1; // Incrementar el tiempo
+            } else {
+                clearInterval(interval); // Detener la simulación
+                generateGraph(v0, k); // Generar la gráfica al finalizar el movimiento
+            }
+        }, 100); // Actualizar cada 100 ms
+    }
+
+    function generateGraph(v0, k) {
+        let ctx = document.getElementById('myChart').getContext('2d');
+        let data = [];
+        for (let t = 0; t <= 10; t += 0.1) {
+            let a = k * t; // Aceleración variable
+            let position = v0 * t + 0.5 * a * t * t; // Fórmula de posición con aceleración variable
+            data.push({ x: t, y: position });
+        }
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'Posición (x) en el tiempo',
+                    data: data,
+                    borderColor: 'blue',
+                    fill: false,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    xAxes: [{
+                        type: 'linear',
+                        position: 'bottom',
+                        ticks: {
+                            min: 0,
+                            max: 20
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Tiempo (s)'
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            min: 0,
+                            max: 20
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Posición (px)'
+                        }
+                    }]
+                }
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
